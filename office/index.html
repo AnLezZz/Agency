@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agency Office</title>
+<style>
+  :root {
+    --bg: #12101c; --floor: #1d1a2e; --wall: #2a2545; --line: #4b4378;
+    --text: #e8e4ff; --dim: #8a84b0; --accent: #ffd166; --ok: #5ee08a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 12px/1.4 "Courier New", monospace; image-rendering: pixelated;
+  }
+  header { padding: 14px 16px 4px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  h1 { margin: 0; font-size: 16px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; }
+  #status { color: var(--dim); }
+  .grid {
+    display: grid; gap: 12px; padding: 12px 16px 24px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (min-width: 760px) { .grid { grid-template-columns: repeat(3, 1fr); max-width: 1000px; margin: 0 auto; } }
+  .room {
+    position: relative; min-height: 190px; padding: 10px;
+    background: linear-gradient(var(--wall) 0 34%, var(--floor) 34% 100%);
+    border: 3px solid var(--line); box-shadow: 4px 4px 0 #000;
+    display: flex; flex-direction: column;
+  }
+  .room h2 { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .badge {
+    position: absolute; top: 8px; right: 8px; min-width: 24px; padding: 2px 6px; text-align: center;
+    background: var(--accent); color: #000; font-weight: bold; border: 2px solid #000;
+  }
+  .badge.zero { background: #3a3560; color: var(--dim); }
+  .stage { flex: 1; display: flex; align-items: flex-end; justify-content: center; padding: 18px 0 6px; }
+  .desk { position: absolute; left: 14%; right: 14%; bottom: 48px; height: 10px; background: #5a3b22; border-top: 3px solid #7d5532; }
+
+  /* pixel character built from box-shadows: 1 unit = 4px */
+  .char { width: 4px; height: 4px; position: relative; margin: 0 0 40px 0; left: -16px; --skin:#f1c27d; --hair:#3b2a20; --shirt:#4d9de0; --pants:#2b2d42;
+    box-shadow:
+      /* hair */ 8px -24px var(--hair), 12px -24px var(--hair), 16px -24px var(--hair), 20px -24px var(--hair),
+      4px -20px var(--hair), 8px -20px var(--hair), 12px -20px var(--hair), 16px -20px var(--hair), 20px -20px var(--hair), 24px -20px var(--hair),
+      /* face */ 4px -16px var(--hair), 8px -16px var(--skin), 12px -16px var(--skin), 16px -16px var(--skin), 20px -16px var(--skin), 24px -16px var(--hair),
+      8px -12px var(--skin), 12px -12px #000, 16px -12px #000, 20px -12px var(--skin),
+      8px -8px var(--skin), 12px -8px var(--skin), 16px -8px var(--skin), 20px -8px var(--skin),
+      /* body */ 4px -4px var(--shirt), 8px -4px var(--shirt), 12px -4px var(--shirt), 16px -4px var(--shirt), 20px -4px var(--shirt), 24px -4px var(--shirt),
+      0px 0px var(--skin), 4px 0px var(--shirt), 8px 0px var(--shirt), 12px 0px var(--shirt), 16px 0px var(--shirt), 20px 0px var(--shirt), 24px 0px var(--shirt), 28px 0px var(--skin),
+      4px 4px var(--shirt), 8px 4px var(--shirt), 12px 4px var(--shirt), 16px 4px var(--shirt), 20px 4px var(--shirt), 24px 4px var(--shirt),
+      /* legs */ 8px 8px var(--pants), 12px 8px var(--pants), 16px 8px var(--pants), 20px 8px var(--pants),
+      8px 12px var(--pants), 12px 12px var(--pants), 16px 12px var(--pants), 20px 12px var(--pants),
+      8px 16px #000, 12px 16px #000, 16px 16px #000, 20px 16px #000;
+    transform: scale(1.5); transform-origin: bottom center;
+  }
+  .room.busy .char { animation: bob .6s steps(2) infinite; }
+  @keyframes bob { 50% { transform: scale(1.5) translateY(-3px); } }
+  #r-lead .char { --shirt:#e0b44d; --hair:#777; }
+  #r-po .char { --shirt:#c77dff; --hair:#6b2d0f; }
+  #r-dev .char { --shirt:#4d9de0; --hair:#111; }
+  #r-test .char { --shirt:#5ee08a; --hair:#7a3b00; }
+  #r-ops .char { --shirt:#ff6b6b; --hair:#222; }
+
+  .tasks { list-style: none; margin: 4px 0 0; padding: 0; font-size: 11px; color: var(--dim); max-height: 66px; overflow: hidden; }
+  .tasks li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tasks .doing { color: var(--accent); }
+  .tasks .blocked { color: #ff6b6b; }
+
+  #r-shipped { border-color: #2f7a4a; }
+  #r-shipped .badge { background: var(--ok); }
+  #r-shipped ul { list-style: none; margin: 8px 0 0; padding: 0; }
+  #r-shipped li { margin-bottom: 6px; word-break: break-all; }
+  #r-shipped a { color: var(--ok); }
+  #r-shipped .empty { color: var(--dim); }
+</style>
+</head>
+<body>
+<header><h1>▮ Agency Office</h1><span id="status">connecting…</span></header>
+<main class="grid">
+  <section class="room" id="r-lead"><h2>Team Lead</h2><span class="badge zero">0</span><div class="desk"></div><div class="stage"><div class="char"></div></div><ul class="tasks"></ul></section>
+  <section class="room" id="r-po"><h2>PO</h2><span class="badge zero">0</span><div class="desk"></div><div class="stage"><div class="char"></div></div><ul class="tasks"></ul></section>
+  <section class="room" id="r-dev"><h2>Developer</h2><span class="badge zero">0</span><div class="desk"></div><div class="stage"><div class="char"></div></div><ul class="tasks"></ul></section>
+  <section class="room" id="r-test"><h2>Tester</h2><span class="badge zero">0</span><div class="desk"></div><div class="stage"><div class="char"></div></div><ul class="tasks"></ul></section>
+  <section class="room" id="r-ops"><h2>DevOps</h2><span class="badge zero">0</span><div class="desk"></div><div class="stage"><div class="char"></div></div><ul class="tasks"></ul></section>
+  <section class="room" id="r-shipped"><h2>Shipped</h2><span class="badge zero">0</span><ul></ul></section>
+</main>
+<script>
+const BASE = new URL('../', location.href).href;
+const ROOMS = { po: 'r-po', developer: 'r-dev', tester: 'r-test', devops: 'r-ops' };
+
+async function getJSON(path) {
+  const r = await fetch(BASE + path + (path.includes('?') ? '&' : '?') + 't=' + Date.now(), { cache: 'no-store' });
+  if (!r.ok) throw new Error(path + ' ' + r.status);
+  return r.json();
+}
+
+function renderRoom(id, tasks) {
+  const room = document.getElementById(id);
+  const open = tasks.filter(t => t.status === 'todo' || t.status === 'doing');
+  const badge = room.querySelector('.badge');
+  badge.textContent = open.length;
+  badge.classList.toggle('zero', open.length === 0);
+  room.classList.toggle('busy', tasks.some(t => t.status === 'doing'));
+  const ul = room.querySelector('.tasks');
+  ul.replaceChildren(...tasks.filter(t => t.status !== 'done').slice(0, 4).map(t => {
+    const li = document.createElement('li');
+    li.className = t.status;
+    li.textContent = `${t.id} ${t.project}: ${t.title}`;
+    return li;
+  }));
+}
+
+async function tick() {
+  try {
+    const all = {};
+    await Promise.all(Object.keys(ROOMS).map(async a => { all[a] = await getJSON(`tasks/${a}.json`); }));
+    for (const a in ROOMS) renderRoom(ROOMS[a], all[a]);
+
+    // Team Lead: projects whose tasks are blocked, or open handoffs from team-lead
+    const lead = Object.values(all).flat().filter(t => t.from === 'team-lead' && t.status !== 'done');
+    renderRoom('r-lead', lead);
+
+    // Shipped: devops done tasks -> projects/<project>/URL.txt
+    const projects = [...new Set(all.devops.filter(t => t.status === 'done').map(t => t.project))];
+    const urls = (await Promise.all(projects.map(async p => {
+      try {
+        const r = await fetch(`${BASE}projects/${p}/URL.txt?t=${Date.now()}`, { cache: 'no-store' });
+        return r.ok ? { p, url: (await r.text()).trim() } : null;
+      } catch { return null; }
+    }))).filter(Boolean);
+    const room = document.getElementById('r-shipped');
+    const badge = room.querySelector('.badge');
+    badge.textContent = urls.length; badge.classList.toggle('zero', !urls.length);
+    const ul = room.querySelector('ul');
+    if (!urls.length) { ul.innerHTML = '<li class="empty">nothing live yet</li>'; }
+    else ul.replaceChildren(...urls.map(({ p, url }) => {
+      const li = document.createElement('li');
+      const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = `${p} → ${url}`;
+      li.append(a); return li;
+    }));
+    document.getElementById('status').textContent = 'live · ' + new Date().toLocaleTimeString();
+  } catch (e) {
+    document.getElementById('status').textContent = 'offline: ' + e.message;
+  }
+}
+tick(); setInterval(tick, 3000);
+</script>
+</body>
+</html>

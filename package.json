@@ -1,0 +1,7 @@
+{
+  "name": "agency",
+  "private": true,
+  "scripts": {
+    "office": "echo \"Office dashboard: http://localhost:3000/office/\" && npx --yes serve . -l 3000"
+  }
+}
