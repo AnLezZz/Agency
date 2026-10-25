@@ -3,3 +3,4 @@
 2026-10-25 05:28  developer → tester  site built, build passes (T-002 done, T-003 todo)
 2026-10-25 05:28  developer → tester  site built, build passes (T-003)
 2026-10-25 05:29  tester → devops  21/21 checks pass (T-004)
+2026-10-25 05:30  devops → team-lead  BLOCKED: needs Vercel login (T-004)
