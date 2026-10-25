@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "id": "T-004",
+    "project": "cafe-demo",
+    "title": "Deploy cafe-demo",
+    "status": "doing",
+    "from": "tester",
+    "notes": "All BACKLOG S1-S5 checks pass (21/21, desktop + 375px). See projects/cafe-demo/TEST_REPORT.md. Static export in out/."
+  }
+]

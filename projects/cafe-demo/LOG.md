@@ -2,3 +2,4 @@
 2026-10-25 05:26  po → developer  BACKLOG.md ready, 5 stories (T-002)
 2026-10-25 05:28  developer → tester  site built, build passes (T-002 done, T-003 todo)
 2026-10-25 05:28  developer → tester  site built, build passes (T-003)
+2026-10-25 05:29  tester → devops  21/21 checks pass (T-004)
